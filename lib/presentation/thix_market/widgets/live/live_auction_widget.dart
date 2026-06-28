@@ -321,3 +321,6 @@ class _LiveAuctionWidgetState extends State<LiveAuctionWidget> {
     );
   }
 }
+
+class RealtimeListenTypes {
+}

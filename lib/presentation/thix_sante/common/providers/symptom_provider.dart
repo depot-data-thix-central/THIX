@@ -1,8 +1,8 @@
 // 📁 lib/presentation/thix_sante/common/providers/symptom_provider.dart
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../data/models/health/symptom_model.dart';
-import '../../../../data/repositories/symptom_repository.dart';
+import 'package:thix_id/data/repositories/symptom_repository.dart';
+import 'package:thix_id/models/thix_sante/health/symptom_model.dart';
 import '../../../../core/utils/logger.dart';
 
 // Repository provider (à injecter)
@@ -40,18 +40,22 @@ class SymptomNotifier extends StateNotifier<AsyncValue<List<SymptomModel>>> {
 
   Future<bool> addSymptom({
     required String nom,
-    required int intensité,
+    required int intensite,
     required DateTime date,
     String? notes,
   }) async {
     _isLoading = true;
     try {
+      final now = DateTime.now();
       final newSymptom = SymptomModel(
-        id: '', // généré par Supabase
+        id: '',
+        patientId: '',
         nom: nom,
-        intensité: intensité,
+        intensite: intensite,
         date: date,
         notes: notes,
+        createdAt: now,
+        updatedAt: now,
       );
       final added = await _repository.addSymptom(newSymptom);
       if (added != null) {

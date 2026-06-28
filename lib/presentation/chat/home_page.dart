@@ -1,6 +1,7 @@
 // lib/presentation/chat/home_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:thix_id/presentation/chat/core/chat_bloc.dart';
 import 'package:thix_id/presentation/chat/core/chat_events.dart';
 import 'package:thix_id/presentation/chat/core/chat_states.dart';
@@ -10,6 +11,7 @@ import 'package:thix_id/presentation/chat/widgets/stories_row.dart';
 import 'package:thix_id/presentation/chat/widgets/chat_filters.dart';
 import 'package:thix_id/presentation/chat/home_widgets/bottom_nav_bar.dart';
 import 'package:thix_id/presentation/chat/home_widgets/chat_home_appbar.dart';
+import 'package:thix_id/nav.dart';
 
 class ChatHomePage extends StatelessWidget {
   const ChatHomePage({Key? key}) : super(key: key);
@@ -32,10 +34,7 @@ class ChatHomePage extends StatelessWidget {
                 slivers: [
                   SliverToBoxAdapter(
                     child: ChatStatsRow(
-                      onlineCount: state.stats.onlineCount,
-                      newMessagesCount: state.stats.newMessagesCount,
-                      activeMeetingsCount: state.stats.activeMeetingsCount,
-                      securityAlertsCount: state.stats.securityAlertsCount,
+                      stats: state.stats,
                     ),
                   ),
                   SliverToBoxAdapter(
@@ -56,20 +55,9 @@ class ChatHomePage extends StatelessWidget {
                         (context, index) {
                           final conv = state.filteredConversations[index];
                           return ConversationTile(
-                            id: conv.id,
-                            name: conv.name,
-                            lastMessage: conv.lastMessage ?? 'Aucun message',
-                            time: _formatTime(conv.lastMessageTime),
-                            unreadCount: conv.unreadCount,
-                            avatarUrl: conv.avatarUrl,
-                            isOnline: conv.isOnline,
-                            isGroup: conv.isGroup,
+                            conversation: conv,
                             onTap: () {
-                              Navigator.pushNamed(
-                                context,
-                                '/chat/conversation',
-                                arguments: conv.id,
-                              );
+                              context.push(AppRoutes.chatConversation.replaceFirst(':id', conv.id));
                             },
                           );
                         },

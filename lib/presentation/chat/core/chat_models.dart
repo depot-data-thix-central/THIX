@@ -59,6 +59,16 @@ class Conversation extends Equatable {
 
   @override
   List<Object?> get props => [id, name, lastMessageTime, unreadCount];
+
+  /// Computed presence for UI widgets.
+  /// If no backend provides presence, defaults to false.
+  bool get isOnline {
+    final v = metadata == null ? null : metadata!['is_online'];
+    if (v is bool) return v;
+    if (v is num) return v != 0;
+    if (v is String) return v.toLowerCase() == 'true' || v == '1';
+    return false;
+  }
 }
 
 // ---------- Message ----------

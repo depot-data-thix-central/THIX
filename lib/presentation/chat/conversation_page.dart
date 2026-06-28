@@ -1,7 +1,7 @@
 // lib/presentation/chat/conversation_page.dart
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:thix_id/presentation/chat/core/chat_bloc.dart';
 import 'package:thix_id/presentation/chat/core/chat_events.dart';
 import 'package:thix_id/presentation/chat/core/chat_states.dart';
@@ -9,19 +9,23 @@ import 'package:thix_id/presentation/chat/core/chat_models.dart';
 import 'package:thix_id/presentation/chat/widgets/chat_bubble.dart';
 import 'package:thix_id/presentation/chat/widgets/chat_input_bar.dart';
 import 'package:thix_id/presentation/chat/widgets/pinned_message.dart';
+import 'package:thix_id/presentation/chat/widgets/reaction_picker.dart';
 import 'package:thix_id/presentation/chat/online_status/typing_indicator.dart';
 import 'package:thix_id/presentation/chat/ephemeral/ephemeral_settings.dart';
 import 'package:thix_id/presentation/chat/confidential_message/confidential_message.dart';
 import 'package:thix_id/presentation/chat/polls/poll_creator_sheet.dart';
 import 'package:thix_id/presentation/chat/polls/inline_poll_widget.dart';
-import 'package:thix_id/presentation/chat/tasks/task_creator.dart';
-import 'package:thix_id/presentation/chat/tasks/task_list_widget.dart';
+import 'package:thix_id/presentation/chat/slash_commands/tasks/task_creator.dart';
+import 'package:thix_id/presentation/chat/slash_commands/tasks/task_list_widget.dart';
 import 'package:thix_id/presentation/chat/slash_commands/slash_command_panel.dart';
 import 'package:thix_id/presentation/chat/slash_commands/slash_command_parser.dart';
-import 'package:thix_id/presentation/chat/attachment_picker.dart';
-import 'package:thix_id/presentation/chat/voice/voice_recorder_widget.dart';
-import 'package:thix_id/presentation/chat/video_message/video_message_widget.dart';
-import 'package:thix_id/presentation/chat/contact_share/contact_share_widget.dart';
+import 'package:thix_id/presentation/chat/widgets/attachment_picker.dart';
+import 'package:thix_id/presentation/chat/voice/voice_recorder_widget_stub.dart'
+    if (dart.library.io) 'package:thix_id/presentation/chat/voice/voice_recorder_widget.dart';
+import 'package:thix_id/presentation/chat/video_message/video_message_widget_stub.dart'
+    if (dart.library.io) 'package:thix_id/presentation/chat/video_message/video_message_widget.dart';
+import 'package:thix_id/presentation/chat/contact_share/contact_share_widget_stub.dart'
+    if (dart.library.io) 'package:thix_id/presentation/chat/contact_share/contact_share_widget.dart';
 import 'package:thix_id/presentation/chat/message_reminder/message_reminder.dart';
 import 'package:thix_id/presentation/chat/translation/translation_button.dart';
 import 'package:thix_id/presentation/chat/translation/translated_bubble.dart';
@@ -131,23 +135,12 @@ class _ConversationPageState extends State<ConversationPage> {
         }
         break;
       case 'remind':
-        final remindData = await MessageReminder.showReminderPicker(
-          context, 
-          messageId: DateTime.now().millisecondsSinceEpoch.toString(),
-          conversationId: widget.conversationId,
-          messagePreview: rawText ?? 'Rappel',
+        await MessageReminder.showReminderPicker(
+          context,
+          DateTime.now().millisecondsSinceEpoch.toString(),
+          widget.conversationId,
+          rawText ?? 'Rappel',
         );
-        // Ici on envoie un message programmé (scheduled)
-        if (remindData != null) {
-          _chatBloc.add(ScheduleMessage(
-            SendMessage(
-              conversationId: widget.conversationId,
-              type: 'text',
-              content: rawText ?? 'Rappel',
-            ),
-            remindData,
-          ));
-        }
         break;
       default:
         // Commande non gérée (ex: /me, /giphy) – on envoie en texte simple
@@ -160,14 +153,7 @@ class _ConversationPageState extends State<ConversationPage> {
     _messageController.clear();
   }
 
-  void _sendVoiceMessage(File file, int duration) {
-    _chatBloc.add(SendMessage(
-      conversationId: widget.conversationId,
-      type: 'voice',
-      mediaUrl: file.path,
-      durationSeconds: duration,
-    ));
-  }
+  // Voice & video sending is handled by their respective widgets/services.
 
   void _sendEphemeralMessage() async {
     final duration = await showDialog<int>(
@@ -211,32 +197,40 @@ class _ConversationPageState extends State<ConversationPage> {
   }
 
   void _showVideoPicker() async {
-    final result = await Navigator.push(
+    await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const VideoMessageWidget(onVideoRecorded: null)),
+      MaterialPageRoute(
+        builder: (_) => VideoMessageWidget(
+          onVideoRecorded: (videoFile, durationSeconds) {
+            _chatBloc.add(SendMessage(
+              conversationId: widget.conversationId,
+              type: 'video',
+              mediaUrl: videoFile.path,
+              metadata: {'duration_seconds': durationSeconds},
+            ));
+          },
+        ),
+      ),
     );
-    if (result != null && result is File) {
-      _chatBloc.add(SendMessage(
-        conversationId: widget.conversationId,
-        type: 'video',
-        mediaUrl: result.path,
-      ));
-    }
   }
 
   void _shareContact() async {
-    final contact = await showModalBottomSheet<Map<String, String>>(
+    if (!mounted) return;
+    await showModalBottomSheet<void>(
       context: context,
-      builder: (_) => const ContactShareWidget(onContactSelected: null),
+      isScrollControlled: true,
+      builder: (sheetContext) => ContactShareWidget(
+        onContactSelected: (contact) {
+          _chatBloc.add(SendMessage(
+            conversationId: widget.conversationId,
+            type: 'contact',
+            content: contact['name'],
+            metadata: contact,
+          ));
+          sheetContext.pop();
+        },
+      ),
     );
-    if (contact != null) {
-      _chatBloc.add(SendMessage(
-        conversationId: widget.conversationId,
-        type: 'contact',
-        content: contact['name'],
-        metadata: contact,
-      ));
-    }
   }
 
   void _showReactionPicker(String messageId) {
@@ -252,11 +246,8 @@ class _ConversationPageState extends State<ConversationPage> {
   }
 
   void _showMessageInfo(Message message) {
-    Navigator.pushNamed(
-      context,
-      '/chat/message-info',
-      arguments: message,
-    );
+    // If a dedicated route exists later, wire it here.
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Infos message: bientôt disponible')));
   }
 
   @override

@@ -1,33 +1,27 @@
 // lib/presentation/chat/widgets/attachment_picker.dart
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 
 class AttachmentPicker {
-  static Future<File?> pickImage() async {
+  static Future<XFile?> pickImage() async {
     final picker = ImagePicker();
     final picked = await picker.pickImage(source: ImageSource.gallery);
-    if (picked != null) return File(picked.path);
-    return null;
+    return picked;
   }
 
-  static Future<File?> pickVideo() async {
+  static Future<XFile?> pickVideo() async {
     final picker = ImagePicker();
     final picked = await picker.pickVideo(source: ImageSource.gallery);
-    if (picked != null) return File(picked.path);
-    return null;
+    return picked;
   }
 
-  static Future<File?> pickFile() async {
+  static Future<PlatformFile?> pickFile() async {
     final result = await FilePicker.platform.pickFiles();
-    if (result != null && result.files.single.path != null) {
-      return File(result.files.single.path!);
-    }
-    return null;
+    return result?.files.single;
   }
 
-  static void showPickerSheet(BuildContext context, Function(File) onSelected) {
+  static void showPickerSheet(BuildContext context, void Function(XFile file) onSelected) {
     showModalBottomSheet(
       context: context,
       builder: (context) => SafeArea(
@@ -56,8 +50,7 @@ class AttachmentPicker {
               leading: const Icon(Icons.insert_drive_file),
               title: const Text('Fichier'),
               onTap: () async {
-                final file = await pickFile();
-                if (file != null) onSelected(file);
+                await pickFile();
                 Navigator.pop(context);
               },
             ),
