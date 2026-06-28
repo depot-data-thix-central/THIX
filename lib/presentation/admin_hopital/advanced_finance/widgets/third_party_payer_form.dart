@@ -2,10 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../common/widgets/admin_form_field.dart';
-import '../../../common/widgets/admin_dropdown.dart';
-import '../../../common/widgets/admin_gradient_button.dart';
-import '../../../common/widgets/admin_date_picker.dart';
+import 'package:thix_id/common/widgets/admin_form_field.dart';
+import 'package:thix_id/common/widgets/admin_dropdown.dart';
+import 'package:thix_id/common/widgets/admin_gradient_button.dart';
+import 'package:thix_id/common/widgets/admin_date_picker.dart';
 
 class ThirdPartyPayerForm extends StatefulWidget {
   final Function(Map<String, dynamic>) onSave;
