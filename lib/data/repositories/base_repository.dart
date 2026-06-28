@@ -1,7 +1,7 @@
 // 📁 lib/data/repositories/base_repository.dart
 
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../core/utils/logger.dart';
+import 'package:thix_id/core/utils/logger.dart';
 
 /// Repository de base qui fournit le client Supabase et une gestion d'erreurs unifiée
 abstract class BaseRepository {

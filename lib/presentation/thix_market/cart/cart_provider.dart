@@ -15,7 +15,7 @@ class CartProvider extends ChangeNotifier {
   bool get isSyncing => _isSyncing;
   
   int get itemCount => _cartItems.length;
-  int get totalQuantity => _cartItems.fold(0, (sum, item) => sum + (item['quantity'] ?? 0));
+  int get totalQuantity => _cartItems.fold(0, (sum, item) => sum + ((item['quantity'] ?? 0) as num).toInt());
   
   double get subtotal => _cartItems.fold(0.0, (sum, item) {
     final price = (item['product']['price'] as num).toDouble();

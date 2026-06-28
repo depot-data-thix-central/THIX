@@ -1,9 +1,9 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class TokenService {
-  static const _storage = FlutterSecureStorage();
+  static final _storage = FlutterSecureStorage();
   static const _tokenKey = 'supabase_edge_token';
 
   // Récupérer le token (le générer si absent ou expiré)

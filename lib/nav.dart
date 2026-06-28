@@ -40,7 +40,7 @@ import 'presentation/thix_reservation/pages/profil.dart';
 // ==================== THIX INFO ====================
 import 'package:thix_id/presentation/thix_info/thix_info_home.dart';
 import 'package:thix_id/presentation/thix_info/article_detail_page.dart';
-import 'package:thix_id/presentation/thix_info/search_page.dart';
+import 'package:thix_id/presentation/thix_info/search_page.dart' as thix_info;
 import 'package:thix_id/presentation/thix_info/category_articles_page.dart';
 import 'package:thix_id/presentation/thix_info/saved_articles_page.dart';
 import 'package:thix_id/presentation/thix_info/breaking_news_page.dart';
@@ -126,16 +126,16 @@ import 'package:thix_id/presentation/thix_sante/pharmacy/screens/pharmacy_report
 // ==================== THIX MONEY (NOUVELLE ARCHITECTURE) ====================
 import 'presentation/thix_money/screens/shared/dashboard_screen.dart';
 import 'presentation/thix_money/screens/shared/transaction_history_screen.dart';
-import 'presentation/thix_money/screens/user/accounts_screen.dart';
-import 'presentation/thix_money/screens/user/transfer_screen.dart';
-import 'presentation/thix_money/screens/user/split_payment_screen.dart';
-import 'presentation/thix_money/screens/user/bill_payment_screen.dart';
-import 'presentation/thix_money/screens/user/savings_screen.dart';
-import 'presentation/thix_money/screens/user/credit_screen.dart';
-import 'presentation/thix_money/screens/user/currency_exchange_screen.dart';
-import 'presentation/thix_money/screens/user/tontine_screen.dart';
-import 'presentation/thix_money/screens/user/donation_screen.dart';
-import 'presentation/thix_money/screens/user/settings_screen.dart';
+import 'presentation/thix_money/screens/shared/user/accounts_screen.dart';
+import 'presentation/thix_money/screens/shared/user/transfer_screen.dart';
+import 'presentation/thix_money/screens/shared/user/split_payment_screen.dart';
+import 'presentation/thix_money/screens/shared/user/bill_payment_screen.dart';
+import 'presentation/thix_money/screens/shared/user/savings_screen.dart';
+import 'presentation/thix_money/screens/shared/user/credit_screen.dart';
+import 'presentation/thix_money/screens/shared/user/currency_exchange_screen.dart';
+import 'presentation/thix_money/screens/shared/user/tontine_screen.dart';
+import 'presentation/thix_money/screens/shared/user/donation_screen.dart';
+import 'presentation/thix_money/screens/shared/user/settings_screen.dart';
 import 'presentation/thix_money/screens/merchant/merchant_qr_code_screen.dart';
 
 // ==================== THIX ÉVÉNEMENT ====================
@@ -1457,7 +1457,7 @@ class AppRouter {
         GoRoute(
           path: AppRoutes.thixInfoSearch,
           name: 'thixInfoSearch',
-          pageBuilder: (context, state) => NoTransitionPage(child: const SearchPage()),
+          pageBuilder: (context, state) => NoTransitionPage(child: const thix_info.SearchPage()),
         ),
         GoRoute(
           path: AppRoutes.thixInfoCategory,

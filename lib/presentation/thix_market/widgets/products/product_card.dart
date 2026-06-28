@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import '../../../providers/cart_provider.dart';
-import '../../../providers/wishlist_provider.dart';
+import '../../cart/cart_provider.dart';
 import 'package:provider/provider.dart';
 
 class ProductCard extends StatefulWidget {

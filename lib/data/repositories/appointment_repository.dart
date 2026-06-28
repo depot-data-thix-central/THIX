@@ -1,7 +1,7 @@
 // 📁 lib/data/repositories/appointment_repository.dart
 
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../base_repository.dart';
+import 'package:thix_id/data/repositories/base_repository.dart';
 import '../../models/thix_sante/hospital/appointment_model.dart';
 
 class AppointmentRepository extends BaseRepository {
