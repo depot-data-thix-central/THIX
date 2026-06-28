@@ -61,41 +61,39 @@ class SearchProvider extends ChangeNotifier {
         await loadRecentSearches();
       }
       
-      var request = _supabase
+      var filter = _supabase
           .from('products')
-          .select('*, shop:shops(name, rating)', count: CountOption.exact)
+          .select('*, shop:shops(name, rating)')
           .eq('status', 'active')
-          .ilike('title', '%$query%')
-          .range(_currentPage * 20, (_currentPage + 1) * 20 - 1);
-      
-      // Apply filters
+          .ilike('title', '%$query%');
+
       if (_currentFilters['min_price'] != null) {
-        request = request.gte('price', _currentFilters['min_price']);
+        filter = filter.gte('price', _currentFilters['min_price']);
       }
       if (_currentFilters['max_price'] != null) {
-        request = request.lte('price', _currentFilters['max_price']);
+        filter = filter.lte('price', _currentFilters['max_price']);
       }
       if (_currentFilters['min_rating'] != null) {
-        request = request.gte('rating', _currentFilters['min_rating']);
+        filter = filter.gte('rating', _currentFilters['min_rating']);
       }
       if (_currentFilters['condition'] != null) {
-        request = request.eq('condition', _currentFilters['condition']);
+        filter = filter.eq('condition', _currentFilters['condition']);
       }
       if (_currentFilters['free_shipping'] == true) {
-        request = request.eq('free_shipping', true);
+        filter = filter.eq('free_shipping', true);
       }
       if (_currentFilters['verified_sellers'] == true) {
-        request = request.eq('shop.is_verified', true);
+        filter = filter.eq('shop.is_verified', true);
       }
-      
-      final response = await request;
+
+      final response = await filter.range(_currentPage * 20, (_currentPage + 1) * 20 - 1);
       final newResults = List<Map<String, dynamic>>.from(response);
-      
+
       setState(() {
         if (newResults.length < 20) _hasMore = false;
         _searchResults.addAll(newResults);
         _currentPage++;
-        _totalResults = response.count ?? 0;
+        _totalResults = _searchResults.length;
       });
     } catch (e) {
       debugPrint('Error searching products: $e');

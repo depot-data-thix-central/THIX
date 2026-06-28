@@ -145,10 +145,10 @@ class MarketProvider extends ChangeNotifier {
     try {
       final response = await _supabase
           .from('notifications')
-          .select('id', count: CountOption.exact)
+          .select('id')
           .eq('user_id', userId)
           .eq('is_read', false);
-      _unreadNotifications = response.count ?? 0;
+      _unreadNotifications = (response as List).length;
       notifyListeners();
     } catch (e) {
       debugPrint('Error loading unread notifications: $e');

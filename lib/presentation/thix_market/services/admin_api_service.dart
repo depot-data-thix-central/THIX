@@ -1,6 +1,5 @@
-import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:http/http.dart' as http;
 
 class AdminApiService {
   final SupabaseClient _supabase = Supabase.instance.client;
@@ -56,27 +55,24 @@ class AdminApiService {
     bool ascending = false,
   }) async {
     try {
-      var query = _supabase
+      var filter = _supabase
           .from('products')
-          .select('*, shop:shops(id, name)', count: CountOption.exact)
-          .range(page * limit, (page + 1) * limit - 1);
+          .select('*, shop:shops(id, name)');
 
       if (search != null && search.isNotEmpty) {
-        query = query.ilike('title', '%$search%');
+        filter = filter.ilike('title', '%$search%');
       }
       if (status != null && status != 'all') {
-        query = query.eq('status', status);
+        filter = filter.eq('status', status);
       }
       if (shopId != null) {
-        query = query.eq('shop_id', shopId);
+        filter = filter.eq('shop_id', shopId);
       }
-      query = query.order(sortBy, ascending: ascending);
-
-      final response = await query;
-      return PaginatedResult(
-        items: List<Map<String, dynamic>>.from(response),
-        total: response.count ?? 0,
-      );
+      final response = await filter
+          .order(sortBy, ascending: ascending)
+          .range(page * limit, (page + 1) * limit - 1);
+      final items = List<Map<String, dynamic>>.from(response);
+      return PaginatedResult(items: items, total: items.length);
     } catch (e) {
       throw AdminApiException('Erreur lors du chargement des produits: $e');
     }
@@ -123,27 +119,24 @@ class AdminApiService {
     bool ascending = false,
   }) async {
     try {
-      var query = _supabase
+      var filter = _supabase
           .from('shops')
-          .select('*, owner:users(id, name, email)', count: CountOption.exact)
-          .range(page * limit, (page + 1) * limit - 1);
+          .select('*, owner:users(id, name, email)');
 
       if (search != null && search.isNotEmpty) {
-        query = query.ilike('name', '%$search%');
+        filter = filter.ilike('name', '%$search%');
       }
       if (status != null && status != 'all') {
-        query = query.eq('status', status);
+        filter = filter.eq('status', status);
       }
       if (ownerId != null) {
-        query = query.eq('owner_id', ownerId);
+        filter = filter.eq('owner_id', ownerId);
       }
-      query = query.order(sortBy, ascending: ascending);
-
-      final response = await query;
-      return PaginatedResult(
-        items: List<Map<String, dynamic>>.from(response),
-        total: response.count ?? 0,
-      );
+      final response = await filter
+          .order(sortBy, ascending: ascending)
+          .range(page * limit, (page + 1) * limit - 1);
+      final items = List<Map<String, dynamic>>.from(response);
+      return PaginatedResult(items: items, total: items.length);
     } catch (e) {
       throw AdminApiException('Erreur lors du chargement des boutiques: $e');
     }
@@ -196,27 +189,21 @@ class AdminApiService {
     bool ascending = false,
   }) async {
     try {
-      var query = _supabase
-          .from('users')
-          .select('*', count: CountOption.exact)
-          .range(page * limit, (page + 1) * limit - 1);
-
+      var filter = _supabase.from('users').select('*');
       if (search != null && search.isNotEmpty) {
-        query = query.ilike('name', '%$search%').or('email.ilike.%$search%');
+        filter = filter.or('name.ilike.%$search%,email.ilike.%$search%');
       }
       if (role != null && role != 'all') {
-        query = query.eq('role', role);
+        filter = filter.eq('role', role);
       }
       if (!includeDeleted) {
-        query = query.is_('deleted_at', null);
+        filter = filter.isFilter('deleted_at', null);
       }
-      query = query.order(sortBy, ascending: ascending);
-
-      final response = await query;
-      return PaginatedResult(
-        items: List<Map<String, dynamic>>.from(response),
-        total: response.count ?? 0,
-      );
+      final response = await filter
+          .order(sortBy, ascending: ascending)
+          .range(page * limit, (page + 1) * limit - 1);
+      final items = List<Map<String, dynamic>>.from(response);
+      return PaginatedResult(items: items, total: items.length);
     } catch (e) {
       throw AdminApiException('Erreur lors du chargement des utilisateurs: $e');
     }
@@ -287,33 +274,29 @@ class AdminApiService {
     bool ascending = false,
   }) async {
     try {
-      var query = _supabase
+      var filter = _supabase
           .from('orders')
-          .select('*, user:users(name, email)', count: CountOption.exact)
-          .range(page * limit, (page + 1) * limit - 1);
-
+          .select('*, user:users(name, email)');
       if (search != null && search.isNotEmpty) {
-        query = query.ilike('id', '%$search%');
+        filter = filter.ilike('id', '%$search%');
       }
       if (status != null && status != 'all') {
-        query = query.eq('status', status);
+        filter = filter.eq('status', status);
       }
       if (userId != null) {
-        query = query.eq('user_id', userId);
+        filter = filter.eq('user_id', userId);
       }
       if (fromDate != null) {
-        query = query.gte('created_at', fromDate.toIso8601String());
+        filter = filter.gte('created_at', fromDate.toIso8601String());
       }
       if (toDate != null) {
-        query = query.lte('created_at', toDate.toIso8601String());
+        filter = filter.lte('created_at', toDate.toIso8601String());
       }
-      query = query.order(sortBy, ascending: ascending);
-
-      final response = await query;
-      return PaginatedResult(
-        items: List<Map<String, dynamic>>.from(response),
-        total: response.count ?? 0,
-      );
+      final response = await filter
+          .order(sortBy, ascending: ascending)
+          .range(page * limit, (page + 1) * limit - 1);
+      final items = List<Map<String, dynamic>>.from(response);
+      return PaginatedResult(items: items, total: items.length);
     } catch (e) {
       throw AdminApiException('Erreur lors du chargement des commandes: $e');
     }
@@ -322,14 +305,14 @@ class AdminApiService {
   /// Met à jour le statut d'une commande
   Future<void> updateOrderStatus(String orderId, String status) async {
     try {
-      await _supabase
-          .from('orders')
-          .update({
-            'status': status,
-            'updated_at': DateTime.now().toIso8601String(),
-            status == 'delivered' ? 'delivered_at' : null: status == 'delivered' ? DateTime.now().toIso8601String() : null,
-          })
-          .eq('id', orderId);
+      final updates = <String, dynamic>{
+        'status': status,
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+      if (status == 'delivered') {
+        updates['delivered_at'] = DateTime.now().toIso8601String();
+      }
+      await _supabase.from('orders').update(updates).eq('id', orderId);
       await _logActivity('order', orderId, 'status_changed', {'new_status': status});
     } catch (e) {
       throw AdminApiException('Erreur lors de la mise à jour de la commande: $e');
@@ -350,24 +333,20 @@ class AdminApiService {
     bool ascending = false,
   }) async {
     try {
-      var query = _supabase
+      var filter = _supabase
           .from('disputes')
-          .select('*, order:orders(id, total), user:users(name)', count: CountOption.exact)
-          .range(page * limit, (page + 1) * limit - 1);
-
+          .select('*, order:orders(id, total), user:users(name)');
       if (status != null && status != 'all') {
-        query = query.eq('status', status);
+        filter = filter.eq('status', status);
       }
       if (userId != null) {
-        query = query.eq('user_id', userId);
+        filter = filter.eq('user_id', userId);
       }
-      query = query.order(sortBy, ascending: ascending);
-
-      final response = await query;
-      return PaginatedResult(
-        items: List<Map<String, dynamic>>.from(response),
-        total: response.count ?? 0,
-      );
+      final response = await filter
+          .order(sortBy, ascending: ascending)
+          .range(page * limit, (page + 1) * limit - 1);
+      final items = List<Map<String, dynamic>>.from(response);
+      return PaginatedResult(items: items, total: items.length);
     } catch (e) {
       throw AdminApiException('Erreur lors du chargement des litiges: $e');
     }

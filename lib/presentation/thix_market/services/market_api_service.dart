@@ -137,56 +137,55 @@ class MarketApiService {
     int limit = 20,
   }) async {
     try {
-      var request = _supabase
+      var filter = _supabase
           .from('products')
-          .select('*, shop:shops(name, rating)', count: CountOption.exact)
+          .select('*, shop:shops(name, rating)')
           .eq('status', 'active')
-          .ilike('title', '%$query%')
-          .range(page * limit, (page + 1) * limit - 1);
+          .ilike('title', '%$query%');
 
       if (filters != null) {
         if (filters['min_price'] != null) {
-          request = request.gte('price', filters['min_price']);
+          filter = filter.gte('price', filters['min_price']);
         }
         if (filters['max_price'] != null) {
-          request = request.lte('price', filters['max_price']);
+          filter = filter.lte('price', filters['max_price']);
         }
         if (filters['min_rating'] != null) {
-          request = request.gte('rating', filters['min_rating']);
+          filter = filter.gte('rating', filters['min_rating']);
         }
         if (filters['category'] != null && filters['category'] != 'all') {
-          request = request.eq('category', filters['category']);
+          filter = filter.eq('category', filters['category']);
         }
         if (filters['free_shipping'] == true) {
-          request = request.eq('free_shipping', true);
-        }
-        if (filters['sort_by'] != null) {
-          switch (filters['sort_by']) {
-            case 'price_asc':
-              request = request.order('price', ascending: true);
-              break;
-            case 'price_desc':
-              request = request.order('price', ascending: false);
-              break;
-            case 'rating':
-              request = request.order('rating', ascending: false);
-              break;
-            case 'newest':
-              request = request.order('created_at', ascending: false);
-              break;
-            default:
-              request = request.order('_score', ascending: false);
-          }
-        } else {
-          request = request.order('_score', ascending: false);
+          filter = filter.eq('free_shipping', true);
         }
       }
 
-      final response = await request;
+      dynamic transform = filter;
+      final sortBy = filters?['sort_by'];
+      switch (sortBy) {
+        case 'price_asc':
+          transform = filter.order('price', ascending: true);
+          break;
+        case 'price_desc':
+          transform = filter.order('price', ascending: false);
+          break;
+        case 'rating':
+          transform = filter.order('rating', ascending: false);
+          break;
+        case 'newest':
+          transform = filter.order('created_at', ascending: false);
+          break;
+        default:
+          transform = filter.order('created_at', ascending: false);
+      }
+
+      final response = await transform.range(page * limit, (page + 1) * limit - 1);
+      final items = List<Map<String, dynamic>>.from(response);
       return SearchResult(
-        items: List<Map<String, dynamic>>.from(response),
-        total: response.count ?? 0,
-        hasMore: (response.length == limit),
+        items: items,
+        total: items.length,
+        hasMore: items.length == limit,
       );
     } catch (e) {
       throw ApiException('Search failed: $e');

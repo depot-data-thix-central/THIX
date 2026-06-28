@@ -129,22 +129,18 @@ class AdminProvider extends ChangeNotifier {
     }
     setState(() => _isLoading = true);
     try {
-      var query = _supabase
-          .from('products')
-          .select('*, shop:shops(name)', count: CountOption.exact)
-          .range(_currentPage * _pageSize, (_currentPage + 1) * _pageSize - 1);
-
+      var filter = _supabase.from('products').select('*, shop:shops(name)');
       if (_searchQuery.isNotEmpty) {
-        query = query.ilike('title', '%$_searchQuery%');
+        filter = filter.ilike('title', '%$_searchQuery%');
       }
       if (_statusFilter != 'all') {
-        query = query.eq('status', _statusFilter);
+        filter = filter.eq('status', _statusFilter);
       }
-      query = query.order(_sortBy, ascending: _sortAscending);
-
-      final response = await query;
+      final response = await filter
+          .order(_sortBy, ascending: _sortAscending)
+          .range(_currentPage * _pageSize, (_currentPage + 1) * _pageSize - 1);
       _products = List<Map<String, dynamic>>.from(response);
-      _totalProducts = response.count ?? 0;
+      _totalProducts = _products.length;
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -173,21 +169,17 @@ class AdminProvider extends ChangeNotifier {
     }
     setState(() => _isLoading = true);
     try {
-      var query = _supabase
-          .from('shops')
-          .select('*, owner:users(name, email)', count: CountOption.exact)
-          .range(_currentPage * _pageSize, (_currentPage + 1) * _pageSize - 1);
-
+      var filter = _supabase.from('shops').select('*, owner:users(name, email)');
       if (_searchQuery.isNotEmpty) {
-        query = query.ilike('name', '%$_searchQuery%');
+        filter = filter.ilike('name', '%$_searchQuery%');
       }
       if (_statusFilter != 'all') {
-        query = query.eq('status', _statusFilter);
+        filter = filter.eq('status', _statusFilter);
       }
-
-      final response = await query;
+      final response = await filter
+          .range(_currentPage * _pageSize, (_currentPage + 1) * _pageSize - 1);
       _shops = List<Map<String, dynamic>>.from(response);
-      _totalShops = response.count ?? 0;
+      _totalShops = _shops.length;
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -216,18 +208,14 @@ class AdminProvider extends ChangeNotifier {
     }
     setState(() => _isLoading = true);
     try {
-      var query = _supabase
-          .from('users')
-          .select('*', count: CountOption.exact)
-          .range(_currentPage * _pageSize, (_currentPage + 1) * _pageSize - 1);
-
+      var filter = _supabase.from('users').select('*');
       if (_searchQuery.isNotEmpty) {
-        query = query.ilike('name', '%$_searchQuery%').or('email.ilike.%$_searchQuery%');
+        filter = filter.or('name.ilike.%$_searchQuery%,email.ilike.%$_searchQuery%');
       }
-
-      final response = await query;
+      final response = await filter
+          .range(_currentPage * _pageSize, (_currentPage + 1) * _pageSize - 1);
       _users = List<Map<String, dynamic>>.from(response);
-      _totalUsers = response.count ?? 0;
+      _totalUsers = _users.length;
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -256,22 +244,18 @@ class AdminProvider extends ChangeNotifier {
     }
     setState(() => _isLoading = true);
     try {
-      var query = _supabase
-          .from('orders')
-          .select('*, user:users(name, email)', count: CountOption.exact)
-          .range(_currentPage * _pageSize, (_currentPage + 1) * _pageSize - 1);
-
+      var filter = _supabase.from('orders').select('*, user:users(name, email)');
       if (_searchQuery.isNotEmpty) {
-        query = query.ilike('id', '%$_searchQuery%');
+        filter = filter.ilike('id', '%$_searchQuery%');
       }
       if (_statusFilter != 'all') {
-        query = query.eq('status', _statusFilter);
+        filter = filter.eq('status', _statusFilter);
       }
-      query = query.order(_sortBy, ascending: _sortAscending);
-
-      final response = await query;
+      final response = await filter
+          .order(_sortBy, ascending: _sortAscending)
+          .range(_currentPage * _pageSize, (_currentPage + 1) * _pageSize - 1);
       _orders = List<Map<String, dynamic>>.from(response);
-      _totalOrders = response.count ?? 0;
+      _totalOrders = _orders.length;
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -288,19 +272,17 @@ class AdminProvider extends ChangeNotifier {
     }
     setState(() => _isLoading = true);
     try {
-      var query = _supabase
+      var filter = _supabase
           .from('disputes')
-          .select('*, order:orders(id, total), user:users(name)', count: CountOption.exact)
-          .range(_currentPage * _pageSize, (_currentPage + 1) * _pageSize - 1);
-
+          .select('*, order:orders(id, total), user:users(name)');
       if (_statusFilter != 'all') {
-        query = query.eq('status', _statusFilter);
+        filter = filter.eq('status', _statusFilter);
       }
-      query = query.order('created_at', ascending: false);
-
-      final response = await query;
+      final response = await filter
+          .order('created_at', ascending: false)
+          .range(_currentPage * _pageSize, (_currentPage + 1) * _pageSize - 1);
       _disputes = List<Map<String, dynamic>>.from(response);
-      _totalDisputes = response.count ?? 0;
+      _totalDisputes = _disputes.length;
     } catch (e) {
       _error = e.toString();
     } finally {

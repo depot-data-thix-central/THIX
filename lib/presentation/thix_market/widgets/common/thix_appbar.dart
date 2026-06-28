@@ -148,10 +148,10 @@ class ThixAppBar extends StatelessWidget implements PreferredSizeWidget {
     try {
       final response = await Supabase.instance.client
           .from('notifications')
-          .select('id', count: CountOption.exact)
+          .select('id')
           .eq('user_id', userId)
           .eq('is_read', false);
-      return response.count ?? 0;
+      return (response as List).length;
     } catch (e) {
       return 0;
     }
@@ -163,9 +163,9 @@ class ThixAppBar extends StatelessWidget implements PreferredSizeWidget {
     try {
       final response = await Supabase.instance.client
           .from('cart')
-          .select('id', count: CountOption.exact)
+          .select('id')
           .eq('user_id', userId);
-      return response.count ?? 0;
+      return (response as List).length;
     } catch (e) {
       return 0;
     }

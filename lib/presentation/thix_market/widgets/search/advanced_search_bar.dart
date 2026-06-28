@@ -54,15 +54,15 @@ class _AdvancedSearchBarState extends State<AdvancedSearchBar> {
   void initState() {
     super.initState();
     _debouncer = Debouncer<String>(
-      delay: const Duration(milliseconds: 300),
-      onValue: _fetchSuggestions,
+      const Duration(milliseconds: 300),
+      initialValue: '',
+      onChanged: _fetchSuggestions,
     );
     _controller.addListener(_onTextChanged);
   }
 
   @override
   void dispose() {
-    _debouncer.cancel();
     _controller.removeListener(_onTextChanged);
     _controller.dispose();
     _focusNode.dispose();
@@ -72,7 +72,7 @@ class _AdvancedSearchBarState extends State<AdvancedSearchBar> {
   void _onTextChanged() {
     final query = _controller.text;
     if (query.length >= 2) {
-      _debouncer.setValue(query);
+      _debouncer.value = query;
       setState(() => _isSearching = query.isNotEmpty);
     } else {
       setState(() {

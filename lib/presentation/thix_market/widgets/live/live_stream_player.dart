@@ -47,7 +47,7 @@ class _LiveStreamPlayerState extends State<LiveStreamPlayer> {
   @override
   void dispose() {
     _engine.leaveChannel();
-    _engine.destroy();
+    _engine.release();
     _messageController.dispose();
     super.dispose();
   }
@@ -55,10 +55,10 @@ class _LiveStreamPlayerState extends State<LiveStreamPlayer> {
   Future<void> _initAgora() async {
     await [Permission.microphone, Permission.camera].request();
     
-    _engine = createRtcEngine();
-    await _engine.initialize(RtcEngineContext(
+    _engine = createAgoraRtcEngine();
+    await _engine.initialize(const RtcEngineContext(
       appId: 'YOUR_AGORA_APP_ID',
-      channelProfile: ChannelProfileType.liveBroadcasting,
+      channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
     ));
     
     _engine.registerEventHandler(RtcEngineEventHandler(
@@ -154,13 +154,15 @@ class _LiveStreamPlayerState extends State<LiveStreamPlayer> {
   }
 
   Future<void> _placeBid() async {
+    final bidController = TextEditingController();
     final bidAmount = await showDialog<double>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Placer une enchère'),
         content: TextField(
+          controller: bidController,
           keyboardType: TextInputType.number,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             hintText: 'Montant (FCFA)',
             suffixText: 'FCFA',
           ),
@@ -169,7 +171,7 @@ class _LiveStreamPlayerState extends State<LiveStreamPlayer> {
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Annuler')),
           ElevatedButton(
             onPressed: () {
-              final amount = double.tryParse((context.findChildRenderObject() as TextEditingController?)?.text ?? '0');
+              final amount = double.tryParse(bidController.text);
               Navigator.pop(context, amount);
             },
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE5592F)),

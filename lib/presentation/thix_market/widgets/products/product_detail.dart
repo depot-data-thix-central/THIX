@@ -6,6 +6,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:intl/intl.dart';
 import '../../cart/cart_provider.dart';
 import 'package:provider/provider.dart';
+import 'product_card.dart';
 
 class ProductDetail extends StatefulWidget {
   final String productId;

@@ -46,18 +46,16 @@ class _ReplayListState extends State<ReplayList> {
     setState(() => _isLoading = true);
     
     try {
-      var query = Supabase.instance.client
+      var filter = Supabase.instance.client
           .from('lives')
           .select('*, shop:shops(name, logo_url)')
-          .eq('status', 'ended')
+          .eq('status', 'ended');
+      if (widget.shopId != null) {
+        filter = filter.eq('shop_id', widget.shopId!);
+      }
+      final response = await filter
           .order('ended_at', ascending: false)
           .range(_page * _limit, (_page + 1) * _limit - 1);
-      
-      if (widget.shopId != null) {
-        query = query.eq('shop_id', widget.shopId);
-      }
-      
-      final response = await query;
       final List<Map<String, dynamic>> newReplays = List<Map<String, dynamic>>.from(response);
       
       setState(() {
