@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import '../core/chat_repository.dart';
+import '../core/chat_models.dart';
 
 class ExportChatPage extends StatefulWidget {
   final String conversationId;

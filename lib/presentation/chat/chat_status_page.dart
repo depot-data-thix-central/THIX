@@ -4,8 +4,8 @@ class ChatStatusPage extends StatelessWidget {
   const ChatStatusPage({super.key});
 
   @override
-  Widget build(BuildContext context) => const Scaffold(
-    appBar: AppBar(title: Text('Chat status')),
-    body: Center(child: Text('Not implemented yet.')),
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('Chat status')),
+    body: const Center(child: Text('Not implemented yet.')),
   );
 }
