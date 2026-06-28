@@ -56,7 +56,7 @@ class _LiveStreamPlayerState extends State<LiveStreamPlayer> {
     await [Permission.microphone, Permission.camera].request();
     
     _engine = createRtcEngine();
-    await _engine.initialize(const RtcEngineContext(
+    await _engine.initialize(RtcEngineContext(
       appId: 'YOUR_AGORA_APP_ID',
       channelProfile: ChannelProfileType.liveBroadcasting,
     ));

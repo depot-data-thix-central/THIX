@@ -9,7 +9,7 @@ class AuthRepository extends BaseRepository {
   // ==================== AUTHENTIFICATION ====================
 
   /// Connexion avec email et mot de passe
-  Future<Map<String, dynamic>> signInWithEmail(String email, String password) async {
+  Future<AuthResponse> signInWithEmail(String email, String password) async {
     return execute(() async {
       final response = await client.auth.signInWithPassword(
         email: email,
@@ -20,13 +20,13 @@ class AuthRepository extends BaseRepository {
   }
 
   /// Connexion avec THIX ID (email + password)
-  Future<Map<String, dynamic>> signInWithThixId(String thixId, String password) async {
+  Future<AuthResponse> signInWithThixId(String thixId, String password) async {
     // Le THIX ID est l'email dans la plupart des cas
     return signInWithEmail(thixId, password);
   }
 
   /// Inscription (création de compte)
-  Future<Map<String, dynamic>> signUp({
+  Future<AuthResponse> signUp({
     required String email,
     required String password,
     required Map<String, dynamic> metadata,

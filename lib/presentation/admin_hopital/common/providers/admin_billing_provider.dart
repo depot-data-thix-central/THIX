@@ -1,8 +1,8 @@
 // 📁 lib/presentation/admin_hopital/common/providers/admin_billing_provider.dart
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../data/models/hospital/invoice_model.dart';
-import '../../../../data/repositories/hospital/billing_repository.dart';
+import 'package:thix_id/models/thix_sante/hospital/invoice_model.dart';
+import 'package:thix_id/data/repositories/billing_repository.dart';
 import '../../../../core/utils/logger.dart';
 
 final billingRepositoryProvider = Provider((ref) => BillingRepository());

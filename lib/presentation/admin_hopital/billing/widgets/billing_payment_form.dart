@@ -7,7 +7,7 @@ import '../../../common/widgets/admin_dropdown.dart';
 import '../../../common/widgets/admin_gradient_button.dart';
 import '../../../common/widgets/admin_date_picker.dart';
 import '../../common/providers/admin_billing_provider.dart';
-import '../../../../data/models/hospital/invoice_model.dart';
+import 'package:thix_id/models/thix_sante/hospital/invoice_model.dart';
 
 class BillingPaymentForm extends ConsumerStatefulWidget {
   final String? invoiceId;

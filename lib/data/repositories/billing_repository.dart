@@ -2,7 +2,7 @@
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:thix_id/data/repositories/base_repository.dart';
-import '../../models/thix_sante/hospital/invoice_model.dart';
+import 'package:thix_id/models/thix_sante/hospital/invoice_model.dart';
 
 class BillingRepository extends BaseRepository {
   // ==================== RÉCUPÉRATION ====================

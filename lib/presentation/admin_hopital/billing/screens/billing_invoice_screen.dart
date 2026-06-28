@@ -12,7 +12,7 @@ import '../../common/widgets/admin_loading_overlay.dart';
 import '../../common/widgets/admin_empty_state.dart';
 import '../../common/widgets/admin_gradient_button.dart';
 import '../../common/widgets/admin_confirm_dialog.dart';
-import '../../../../data/models/hospital/invoice_model.dart';
+import 'package:thix_id/models/thix_sante/hospital/invoice_model.dart';
 
 class BillingInvoiceScreen extends ConsumerStatefulWidget {
   const BillingInvoiceScreen({Key? key}) : super(key: key);

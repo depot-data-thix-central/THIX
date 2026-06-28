@@ -6,7 +6,7 @@ import '../../../common/widgets/admin_status_badge.dart';
 import '../../../common/widgets/admin_gradient_button.dart';
 import '../../../common/widgets/admin_confirm_dialog.dart';
 import '../../common/providers/admin_billing_provider.dart';
-import '../../../../data/models/hospital/invoice_model.dart';
+import 'package:thix_id/models/thix_sante/hospital/invoice_model.dart';
 
 class BillingInvoiceItem extends ConsumerStatefulWidget {
   final InvoiceModel invoice;

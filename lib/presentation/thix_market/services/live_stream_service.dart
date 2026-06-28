@@ -15,7 +15,7 @@ class LiveStreamService {
     await [Permission.microphone, Permission.camera].request();
 
     _engine = createRtcEngine();
-    await _engine.initialize(const RtcEngineContext(
+    await _engine.initialize(RtcEngineContext(
       appId: 'YOUR_AGORA_APP_ID',
       channelProfile: ChannelProfileType.liveBroadcasting,
     ));
@@ -236,4 +236,7 @@ class LiveStreamService {
     await _engine.leaveChannel();
     await _engine.destroy();
   }
+}
+
+class RtcError {
 }
